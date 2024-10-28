@@ -1,0 +1,300 @@
+Bandit Overthewire
+
+Level 0 
+En este nivel aprendemos a loggearnos usando ssh, usamos el user badnit0 y password bandit0 al host bandit.labs.overthewire.org por el puerto 2220
+
+ssh bandit0@bandit.labs.overthewire.org -p 2220
+password: bandit0
+
+Level 0->1
+Una vez loggeados con el usuario bandit0, nos dice que la contraseña esta alojada en el fichero llamado readme
+
+Podemos ver que somos el usuario bandit0 con el siguiente comando
+whoami
+Podemos listar los archivos en el directorio actual
+ls
+Vemos que hay un fichero readme
+Si le realizamos un cat podemos ver el contenido del fichero
+cat readme
+Y podemos ver la contraseña para avanzar al siguiente nivel:
+ZjLjTmM6FvvyRnrb2rfNWOZOTa6ip5If
+
+Level 1->2
+Una vez loggeados con el usuario bandit1, nos dice que la contraseña se encuentra alojada en un fichero con el nombre -
+
+Si hacemos un ls o un ls -l podemos ver un fichero con dicho nombre
+Pero como podemos ver su contenido
+Si ejecutamos el siguiente comando:
+cat - , el comando cat entra en un conflicto debido a que con -, le estamos indicando que seguido de eso viene algún parámetro
+Podemos ejecutar el siguiente comando
+cat ./-
+En el comando con ./ le especificamos el directorio actual , y con - le decimos que lleva el nombre de -
+Tambien otra forma de leer el contenido es usando rutas
+Con el comando pwd podemos saber en que ruta nos encontramos
+/home/bandit1
+Y si con esto ejecutamos un cat
+cat /home/bandit1/- , podríamos ver el contenido de dicho archivo
+Tambien ya que en este directorio solo hay un fichero le podemos especificar que abra todos los archivos con la ayuda de *
+cat /home/bandit1/*
+Tambien podemos ejecutar comandos a nivel de sistema con $()
+cat $(pwd)/- o cat $(pwd)/*
+Y podemos ver la contraseña del siguiente nivel
+263JGJPfgU6LtdEvgfWU1XP5yac29mFx
+
+Level 2->3
+Una vez loggeados con el usuario bandit2
+Podemos ver que la contraseña se encuentra en el fichero que lleva de nombre spaces in this filename
+Listamos los ficheros que hay en el directorio
+ls
+Vemos el fichero mencionado, pero al realizarle un cat entra en conflicto
+cat spaces in this filename
+Debido a que cat lo esta tomando como si fueran archivos diferentes
+cat spaces
+cat in
+cat this
+cat filename
+Podemos ayudarnos con ""
+cat "spaces in this filename"
+Tambien podemos ayudarnos con el *
+cat s*
+Le decimos que nos muster el contenido de los archivos que comiencen con s y con * le indicamos que lo que le siga después de s
+cat *e
+Con el comando le estamos indicando que nos muestre el contenido de cualquier archivo que termine en e
+cat *this*
+Con este comando le decimos que nos muestre el contenido de cualquier archivo que tenga un this en medio de su nombre
+Pero tambien nos podemos ayuda con el TAB, para autocompletar el nombre
+cat s+TAB
+cat spaces\ in\ this\ filename
+Y tendríamos la contraseña para el siguiente nivel
+MNk8KNH3Usiio41PRUEoDFPqfxLPlSmx
+
+Level 3->4
+Nos loggeamos con el usuario bandit3
+Y vemos que la contraseña esta alojada en un directorio oculto
+Para listar todos los directorios y ficheros estén ocultos o no usamos
+ls -l, ls -a, ls -la
+Vemos el directorio oculto inhere
+Podemos hacer un cat al directorio y con ayuda del TAB podemos obtener el nombre del fichero oculto
+cat inhere/./...Hiding-From-You
+Y podemos ver la contraseña para el siguiente nivel
+2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ
+
+Level 4->5
+Nos loggeamos con el usuario badnit4
+Vemos que la contraseña esta alojada en un fichero en el directorio inhere, pero tiene la característica de que solo es legible por humanos
+ls
+cd inhere
+ls
+Vemos que hay varios archivos -file
+Si ejecutamos
+file ./-file*
+Vemos:
+./-file00: data
+./-file01: data
+./-file02: data
+./-file03: data
+./-file04: data
+./-file05: data
+./-file06: data
+./-file07: ASCII text
+./-file08: data
+./-file09: data
+Podemos ver un archivo en formato ASCII
+Podemos realizar un cat al fichero 
+cat ./-file07
+Y vemos la contraseña
+Tambien podemos ayudarnos con el comando find
+find . -name -file* | xargs file
+./inhere/-file08: data
+./inhere/-file02: data
+./inhere/-file09: data
+./inhere/-file01: data
+./inhere/-file00: data
+./inhere/-file05: data
+./inhere/-file07: ASCII text
+./inhere/-file03: data
+./inhere/-file06: data
+./inhere/-file04: data
+
+Y vemos el fichero ASCII
+find . -name -file07 | xargs cat
+Y podemos ver la contraseña 
+4oQYVPkxZOOEOO5pTW81FB8j8lxXGUQw
+
+Level 5->6
+Nos loggeamos con el usuario bandit 5
+Vemos que la contraseña esta alojada en el directorio inhere y tiene las siguientes características: human-readable, 1033 bytes y not executable
+Listamos
+ls
+Y vemos el directorio inhere
+Podemos usar el comando find para buscar
+find . -type f -readable -size 1033c ! -executable 
+Y vemos
+./inhere/maybehere07/.file2
+Le podemos hacer un xargs cat para ver el contenido
+find . -type f -readable -size 1033c ! -executable | xargs cat | xargs
+Y podemos ver la contraseña para el siguiente nivel
+HWasnPhtq9AVKe0dmk45nxy20cvUa6EG
+
+Level 6->7
+Nos loggeamos con el usuario bandit6
+Nos dicen que la contraseña esta alojada en algún lugar del servidor y que tiene las siguientes características: 
+    owned by user bandit7
+    owned by group bandit6
+    33 bytes in size
+Usamos el comando find para buscar por las características
+find / -user bandit7 -group bandit6 -size 33c
+Para que nos salgan solo las operaciones correctas lo derivamos al /dev/null
+find / -user bandit7 -group bandit6 -size 33c 2>/dev/null
+Y obtenemos:
+/var/lib/dpkg/info/bandit7.password
+le realizamos un xargs cat
+find / -user bandit7 -group bandit6 -size 33c 2>/dev/null| xargs cat
+Y podemos ver la contraseña
+morbNTDkSW6jIlUc0ymOdMaLnOlFVAaj
+
+Bandit 7->8
+Una vez loggeados con el usuario bandit7
+Vemos que la contraseña para el siguiente nivel esta alojada al lado de la palabra millionth
+Si listamos vemos un fichero llamado data.txt
+Podemos usar el comando grep para ver la contraseña
+grep "millionth" data.txt
+Tambien podemos usar el comando awk 
+awk '/millionth/' data.txt
+Podemos filtrar para que solo nos muestre el segundo argumento
+awk '/millionth/' data.txt | awk '{print $2}'
+Tambien podemos usar el siguiente comando para que nos muestre el ultimo valor de la linea
+
+awk '/millionth/' data.txt | awk 'NF{print $NF}'
+Y podemos ver la contraseña para el siguiente nivel
+dfwvzFQi4mU0wfNbFOe9RoWskMLg7eEc
+
+Bandit 8->9
+Solo se repite una vez
+Listamos
+ls
+Y vemos el fichero data.txt
+Le realizamos un cat, y usamos el comando sort para ordenar
+cat data.txt|sort
+Añadimos el comando uniq -u para que nos muestre el valor único
+cat data.txt |sort | uniq -u
+Y vemos la contraseña del siguiente nivel
+4CKMh1JI91bUIZZPXDqGanal4xvAg0JM
+
+Bandit 9->10
+El fichero contiene pocas líneas legibles para humanos 
+Listamos
+ls
+Le realizamos un cat data.txt
+Podemos usar el comando strings para ver los caracteres imprimibles
+strings data.txt 
+Podemos usar grep para que nos muestren los valores que están al lado de ==
+strings data.txt | grep "==="
+Para ver la ultima linea usamos el comando tail
+strings data.txt | grep "===" | tail -n 1
+Para ver solo la contraseña usamos awk
+strings data.txt | grep "===" | tail -n 1 | awk '{print $2}'
+Y podemos ver la contraseña
+FGUW5ilLVJrxX9kMYMmlN4MgbpfMiqey
+
+Bandit 10->11
+Nos dice que la contraseña esta codificada en Base64
+Le realizamos un cat data.txt
+Y para decodificar usamos 
+cat data.txt | base64 -d
+Para ver solo la contraseña usamos awk
+cat data.txt | base64 -d |awk 'NF{print $NF}'
+Y podemos ver la contraseña
+dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr
+
+Bandit 11->12
+Nos dice que la contraseña a sido rotada 13 posiciones
+Podemos usar Caesar cipher https://cryptii.com/pipes/caesar-cipher
+The password is 7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4
+Tambien podemos hacerlo en consola usando el comando tr
+cat data.txt | tr '[G-ZA-Fg-za-f]' '[T-ZA-St-za-s]'
+Y nos quedamos con el ultimo valor
+cat data.txt | tr '[G-ZA-Fg-za-f]' '[T-ZA-St-za-s]'|awk 'NF{print $NF}'
+Y podemos ver la contraseña
+7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4
+
+Bandit 12->13
+La contraseña esta en un archivo continuamente comprimido
+Creamos el siguiente script
+
+#!/bin/bash
+
+archivo=$(7z l data | grep "Name" -A 2 | tail -n 1 | awk '{print $NF}')
+7z x data > /dev/null 2>&1
+contador=1
+while true; do
+        7z l $archivo > /dev/null 2>&1
+        if [$? -eq 0]; then
+                new_archivo=$(7z l $archivo | grep "Name" -A 2 | tail -n 1 | awk '{print $NF}')
+                7z x $archivo >/dev/null 2>&1 && archivo =$new_archivo
+        else
+                cat $archivo; exit 1
+        fi
+done
+
+
+
+Bandit 13
+FO5dwFsc0cbaIiH0h8J2eUks2vdTDwAn
+
+Bandit 14
+MU4VWeTyJk8ROof1qqmcBPaLh7lDCPvS
+
+Bandit 15
+8xCjnmgoKbGLhHFAZlGE5Tmu4M2tKJQo
+
+Bandit 16
+kSkvUpMQ7lBYyCM4GBPvCvT1BfWRy0Dx
+
+Bandit 17
+ncat - ssl localhost <port>
+
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAvmOkuifmMg6HL2YPIOjon6iWfbp7c3jx34YkYWqUH57SUdyJ
+imZzeyGC0gtZPGujUSxiJSWI/oTqexh+cAMTSMlOJf7+BrJObArnxd9Y7YT2bRPQ
+Ja6Lzb558YW3FZl87ORiO+rW4LCDCNd2lUvLE/GL2GWyuKN0K5iCd5TbtJzEkQTu
+DSt2mcNn4rhAL+JFr56o4T6z8WWAW18BR6yGrMq7Q/kALHYW3OekePQAzL0VUYbW
+JGTi65CxbCnzc/w4+mqQyvmzpWtMAzJTzAzQxNbkR2MBGySxDLrjg0LWN6sK7wNX
+x0YVztz/zbIkPjfkU1jHS+9EbVNj+D1XFOJuaQIDAQABAoIBABagpxpM1aoLWfvD
+KHcj10nqcoBc4oE11aFYQwik7xfW+24pRNuDE6SFthOar69jp5RlLwD1NhPx3iBl
+J9nOM8OJ0VToum43UOS8YxF8WwhXriYGnc1sskbwpXOUDc9uX4+UESzH22P29ovd
+d8WErY0gPxun8pbJLmxkAtWNhpMvfe0050vk9TL5wqbu9AlbssgTcCXkMQnPw9nC
+YNN6DDP2lbcBrvgT9YCNL6C+ZKufD52yOQ9qOkwFTEQpjtF4uNtJom+asvlpmS8A
+vLY9r60wYSvmZhNqBUrj7lyCtXMIu1kkd4w7F77k+DjHoAXyxcUp1DGL51sOmama
++TOWWgECgYEA8JtPxP0GRJ+IQkX262jM3dEIkza8ky5moIwUqYdsx0NxHgRRhORT
+8c8hAuRBb2G82so8vUHk/fur85OEfc9TncnCY2crpoqsghifKLxrLgtT+qDpfZnx
+SatLdt8GfQ85yA7hnWWJ2MxF3NaeSDm75Lsm+tBbAiyc9P2jGRNtMSkCgYEAypHd
+HCctNi/FwjulhttFx/rHYKhLidZDFYeiE/v45bN4yFm8x7R/b0iE7KaszX+Exdvt
+SghaTdcG0Knyw1bpJVyusavPzpaJMjdJ6tcFhVAbAjm7enCIvGCSx+X3l5SiWg0A
+R57hJglezIiVjv3aGwHwvlZvtszK6zV6oXFAu0ECgYAbjo46T4hyP5tJi93V5HDi
+Ttiek7xRVxUl+iU7rWkGAXFpMLFteQEsRr7PJ/lemmEY5eTDAFMLy9FL2m9oQWCg
+R8VdwSk8r9FGLS+9aKcV5PI/WEKlwgXinB3OhYimtiG2Cg5JCqIZFHxD6MjEGOiu
+L8ktHMPvodBwNsSBULpG0QKBgBAplTfC1HOnWiMGOU3KPwYWt0O6CdTkmJOmL8Ni
+blh9elyZ9FsGxsgtRBXRsqXuz7wtsQAgLHxbdLq/ZJQ7YfzOKU4ZxEnabvXnvWkU
+YOdjHdSOoKvDQNWu6ucyLRAWFuISeXw9a/9p7ftpxm0TSgyvmfLF2MIAEwyzRqaM
+77pBAoGAMmjmIJdjp+Ez8duyn3ieo36yrttF5NSsJLAbxFpdlc1gvtGCWW+9Cq0b
+dxviW8+TFVEBl1O4f7HVm6EpTscdDxU+bCXWkfjuRb7Dy9GOtt9JPsX8MBTakzh3
+vBgsyi/sN3RqRBcGU40fOoZyfAMT8s1m/uYv52O6IgeuZ/ujbjY=
+-----END RSA PRIVATE KEY-----
+
+Bandit 17
+EReVavePLFHtFlFsjn3hyzMlvSuSAcRD
+
+Bandit 18
+x2gLTTjFwMOhQ8oWNbMN362QKxfRqGlO
+
+Bandit 19
+cGWpMaKXVwDUNgPAVJbWYuGHVn9zl3j8
+
+Bandit 20
+0qXahG8ZjOVMN9Ghs7iOWsCfZyXOUbYO
+
+Bandit 21
+EeoULMCra2q0dSkYj561DX7s1CpBuOBt
+
+
